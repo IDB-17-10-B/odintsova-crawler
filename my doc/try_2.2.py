@@ -21,7 +21,7 @@ def foo(addr, index):
     if len(item_split)>1:
      new_text.append(item_split[1])
     else:
-      new_text.append('')
+      new_text.append('none')
 
     if item.startswith('/'):
       new_links.append (site+item_split[0])
