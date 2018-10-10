@@ -6,8 +6,6 @@ import requests
 import time
 pattern=re.compile(r'href="(?P<url>[a-zA-Z0-9:/&?=/.-]+">[a-zA-Zа-яА-Я0-9:/&?=/./ /(/)-]+)</a>')
 
-
-
 def foo(addr, index):
   html=requests.get(addr).text
   links=pattern.findall(html)
@@ -50,8 +48,8 @@ def foo(addr, index):
   return new_file
 
 main_file=foo(site,depth)
-main_links.extend(main_file[0])
-main_text.extend(main_file[1])
+main_links=main_file[0]
+main_text=main_file[1]
 inumb=0
 while inumb<len(main_links):
   print (main_text[inumb],'-',main_links[inumb])
