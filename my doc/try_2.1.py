@@ -7,11 +7,6 @@ import time
 pattern=re.compile(r'href="(?P<url>[a-zA-Z0-9:/&?=/.-]+)">[a-zA-Zа-яА-Я0-9:/&?=/.-/ ]+</a>')
 pattern_index=re.compile(r'href="[a-zA-Zа-яА-Я0-9:/&?=/.-]+">([a-zA-Zа-яА-Я0-9:/&?=/.-/ ]+.)</a>')
 
-
-def foo_index(numb):
-  numb=0
-
-
 def foo(addr, index):
   html=requests.get(addr).text
   links=pattern.findall(html)
