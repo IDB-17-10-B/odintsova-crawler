@@ -1,57 +1,46 @@
-site='http://stankin.ru'
-depth=2
-
+site='http://stankin.ru/university/'
 import re
 import requests
 import time
-pattern=re.compile(r'href="(?P<url>[a-zA-Z0-9:/&?=/.-]+">[a-zA-Zа-яА-Я0-9:/&?=/./ /(/)-]+)</a>')
+pattern=re.compile(r'href="(?P<url>[a-zA-Z0-9:/&?=/.-]+)"')
+body_pattern=re.compile(r'<body>([\s\S]+)</body>')
+script_pattern=re.compile(r'<script[\S\s]*>[\s\S]+</script>')
+hook_pattern=re.compile(r'<[\S ]+>')
+space_pattern=re.compile(r'[\t\n\r\s]+')
+
 
 def foo(addr, index):
   html=requests.get(addr).text
   links=pattern.findall(html)
+
+  body_text=body_pattern.search(html)
+
+  script_text=script_pattern.sub('',body_text)
+  hook_text=hook_pattern.sub('',script_text)
+  
+  #space_text=space_pattern.split(text)
+  print (hook_text)
+ # print (space_text)
   new_links=[]
-  new_text=[]
+  
   for item in links:
     if item.endswith(('.png','.css')):
       continue
-    item_split=['','']
-    item_split=re.split(r'">',item,1)
-    if len(item_split)>1:
-     new_text.append(item_split[1])
-    else:
-      new_text.append('none')
-    #print(new_text,new_links)
     if item.startswith('/'):
-      new_links.append (site+item_split[0])
+      new_links.append (site+item)
     elif not item.startswith('/') and not item.startswith('http://'):
-      new_links.append (addr+'/'+item_split[0]) 
+      new_links.append (addr+'/'+item) 
     elif 'stankin.ru' in item:
-      new_links.append(item_split[0])
-
-  if (index-1<0):
-    new_file=[new_links,new_text]
-    return new_file
-
-  all_links=[]
-  all_text=[]
-  inumb=0
-  while inumb<len(new_links):
-    print(new_text[inumb],'-',new_links[inumb])
+      new_links.append(item)
+    if (index-1<0):
+      return new_links
+  all_links =[]
+  for item in new_links:
+    print(item)
     time.sleep(2)
-    current_file =foo(new_links[inumb],index-1)
-    all_links.extend(current_file[0])
-    all_text.extend(current_file[1])
-    inumb+=1
+    current_links = foo(item,index-1)
+    all_links.extend(current_links)
   new_links.extend(all_links)
-  new_text.extend(all_text)
-  new_file=[new_links,new_text]
-  return new_file
-
-main_file=foo(site,depth)
-main_links=main_file[0]
-main_text=main_file[1]
-inumb=0
-while inumb<len(main_links):
-  print (main_text[inumb],'-',main_links[inumb])
-  inumb+=1
-
+  return new_links
+for item in foo(site,2):
+  print (item)
