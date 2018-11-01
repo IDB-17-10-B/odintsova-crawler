@@ -1,36 +1,45 @@
 site='http://stankin.ru/university'
-word='адрес'
+word='обработки'
 
 import re
 import requests
 import time
 pattern=re.compile(r'href="(?P<url>[a-zA-Z0-9:/&?=/.-]+)"')
 body_pattern=re.compile(r'<body>([\s\S]+)</body>')
-script_pattern=re.compile(r'<script[\S\s]*>[\s\S]+</script>')
-hook_pattern=re.compile(r'<[a-z/="0-9 -]+>')
+style_pattern=re.compile(r'<style[a-zA-Z="/ ]*>[\S\s]+</style>')
+script_pattern=re.compile(r'<script[a-zA-Z="/ ]*>[\s\S]+</script>')
+nbsp_pattern=re.compile(r'&nbsp;')
+hook_pattern=re.compile(r'<.*?>')
 space_pattern=re.compile(r'[\t\n\r\s]+')
-
+symbol_pattern=re.compile(r'[,.:+;!&%|\()/©@"?/]+')
 
 def foo(search_word, addr, index):
   html=requests.get(addr).text
   links=pattern.findall(html)
   
   text=body_pattern.search(html).group()
-  
+
   text=script_pattern.sub('',text)
-  print (text)
-  text=re.sub('&nbsp;','',text)
-  text=space_pattern.sub(' ',text).lower()#AbC->abc
+  text=style_pattern.sub('',text)
   
+  #print (text)
+  #print ('---------------')
   text=hook_pattern.sub('',text)
-  
-  #text=space_pattern.sub(' ',text).lower()#AbC->abc
+  text=nbsp_pattern.sub('',text)
+  text=space_pattern.sub(' ',text).lower()#AbC->abc
+  #извращения с ненужными символами
+  text=symbol_pattern.sub('',text)
+
+  print (text)  
+  print ('---------------')
+
+
   words=re.split(' ',text)
-  if words[0]=='':
-    words.pop(0)
-  if words[len(words)-1]=='':
-    words.pop(len(words)-1)
-  #print (words)
+  for i in range(len(words))
+    if words[i]=='':
+    words.pop(i)
+  print (words)
+  print ('---------!!!-------')
   repetitions=0
   list_rep=[]
   for item in words:
@@ -38,7 +47,6 @@ def foo(search_word, addr, index):
       repetitions+=1
   list_rep.append(repetitions)
   print (list_rep) 
-
 
 
   new_links=[]
@@ -61,6 +69,8 @@ def foo(search_word, addr, index):
     current_links = foo(search_word,item,index-1)
     all_links.extend(current_links)
   new_links.extend(all_links)
+
+
   return new_links
 
 for item in foo(word,site,2):
