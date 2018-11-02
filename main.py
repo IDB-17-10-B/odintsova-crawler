@@ -1,14 +1,15 @@
 site='http://stankin.ru/university'
 word='обработки'
-
+import sys
 import re
 import requests
 import time
 pattern=re.compile(r'href="(?P<url>[a-zA-Z0-9:/&?=/.-]+)"')
 body_pattern=re.compile(r'<body>([\s\S]+)</body>')
-style_pattern=re.compile(r'<style[a-zA-Z="/ ]*>[\S\s]+</style>')
-script_pattern=re.compile(r'<script[a-zA-Z="/ ]*>[\s\S]+</script>')
-nbsp_pattern=re.compile(r'&nbsp;')
+style_pattern=re.compile(r'<style[^>]*>[\s\S]*?</style>')
+script_pattern=re.compile(r'<script[^>]*>[\s\S]*?</script>')
+
+
 hook_pattern=re.compile(r'<.*?>')
 space_pattern=re.compile(r'[\t\n\r\s]+')
 symbol_pattern=re.compile(r'[,.:+;!&%|\()/©@"?/]+')
@@ -18,37 +19,17 @@ def foo(search_word, addr, index):
   links=pattern.findall(html)
   
   text=body_pattern.search(html).group()
-
   text=script_pattern.sub('',text)
   text=style_pattern.sub('',text)
-  
-  #print (text)
-  #print ('---------------')
   text=hook_pattern.sub('',text)
-  text=nbsp_pattern.sub('',text)
-  text=space_pattern.sub(' ',text).lower()#AbC->abc
-  #извращения с ненужными символами
-  text=symbol_pattern.sub('',text)
-
+  text=re.sub(r'&nbsp;','',text)
+  text=re.sub(r'&quot;','',text)
+  text=space_pattern.sub(' ',text)
+  
+  #f = open(, "a")
   print (text)  
   print ('---------------')
-
-
-  words=re.split(' ',text)
-  for i in range(len(words))
-    if words[i]=='':
-    words.pop(i)
-  print (words)
-  print ('---------!!!-------')
-  repetitions=0
-  list_rep=[]
-  for item in words:
-    if item==search_word:
-      repetitions+=1
-  list_rep.append(repetitions)
-  print (list_rep) 
-
-
+  foo2(search_word,text)
   new_links=[]
   
   for item in links:
@@ -70,8 +51,24 @@ def foo(search_word, addr, index):
     all_links.extend(current_links)
   new_links.extend(all_links)
 
-
   return new_links
+
+def foo2(search_word,text):
+  #извращения с ненужными символами
+  text=symbol_pattern.sub('',text).lower()#AbC->abc
+  text=space_pattern.sub(' ',text)
+  words=re.split(' ',text)
+
+  print (words)
+  print ('---------!!!-------')
+
+  rep=0
+  for item in words:
+    if item==search_word:
+      rep+=1
+  print ('Слово "',word,'" повторяется ',rep, ' раз') 
+  return rep
+
 
 for item in foo(word,site,2):
   print (item)
