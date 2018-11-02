@@ -1,0 +1,3 @@
+stemmer=stemmer.stemmer('russian')
+  words=re.split(' ',text)
+  stemmer.stemwords(words)
